@@ -1,6 +1,7 @@
 package com.example.remindclientservice.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class TestController {
@@ -24,6 +26,7 @@ public class TestController {
 
     @GetMapping("/hello")
     public ResponseEntity<String> getHello(){
+        log.info("user-client info: {}", env.getProperty("eureka.instance.instance-id"));
         return new ResponseEntity<>("Hello, this is user-client", HttpStatus.OK);
     }
 
