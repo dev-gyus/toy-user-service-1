@@ -37,7 +37,7 @@ public class TestController {
     public ResponseEntity<List<String>> getProperties(){
         return new ResponseEntity<>(Arrays.asList(env.getProperty("test.token-expire"), env.getProperty("test.salt")), HttpStatus.OK);
     }
-
+//
     @PostMapping("/publish/test")
     public ResponseEntity<Boolean> kafkaPublishTest(@RequestBody KafkaTestRequest kafkaTestRequest){
         log.info("카프카 퍼블리쉬 테스트 메소드 진입");
