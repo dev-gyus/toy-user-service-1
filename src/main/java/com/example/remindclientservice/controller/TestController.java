@@ -1,10 +1,9 @@
 package com.example.remindclientservice.controller;
 
 import com.example.remindclientservice.kafka_publisher.KafkaPublisher;
-import com.example.remindclientservice.payload.KafkaTestRequest;
+import com.example.remindclientservice.payload.kafka.KafkaTestRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
