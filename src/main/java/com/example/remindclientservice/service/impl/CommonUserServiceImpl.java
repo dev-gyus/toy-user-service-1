@@ -31,6 +31,7 @@ public class CommonUserServiceImpl implements UserService {
         // 패스워드 인코딩해서 User 저장하기
         UserDao savedDao = userRepository.save(new UserDao(sequentialId, email, passwordEncoder.encode(password), mobile, nickName));
         // Dao -> Dto
+        //
         return ModelMapperConstants.map(savedDao, UserDto.Common.class);
     }
 
