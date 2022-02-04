@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 public class UserController {
     private final UserService userService;
     private final MessageSource messageSource;
-
+//
     @PostMapping("")
     public ResponseEntity<UserResponse> createUser(@Valid  @RequestBody UserRequest userRequest){
         log.info("email:{} / mobile:{} / nickName:{}", userRequest.getEmail(), userRequest.getMobile(), userRequest.getNickName());
