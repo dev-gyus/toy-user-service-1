@@ -40,7 +40,7 @@ public class TestController {
     @PostMapping("/publish/test")
     public ResponseEntity<Boolean> kafkaPublishTest(@RequestBody KafkaTestRequest kafkaTestRequest){
         log.info("카프카 퍼블리쉬 테스트 메소드 진입");
-        kafkaPublisher.publishTest(kafkaTestRequest.getMessage());
+        kafkaPublisher.publishTest(kafkaTestRequest.getMessage(), kafkaTestRequest.getMessage2());
         return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
     }
 }

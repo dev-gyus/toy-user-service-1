@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KafkaTestRequest {
     private String message;
+    private String message2;
 }
