@@ -19,7 +19,6 @@ import java.util.Map;
 @Configuration
 @EnableKafka
 public class KafkaConsumerConfig {
-    // Listener(Subscription) 설정
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Object> listenerContainerFactory(){
         ConcurrentKafkaListenerContainerFactory<String, Object> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
