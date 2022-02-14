@@ -3,8 +3,10 @@ package com.example.toyuserservice.service.impl;
 import com.example.toyuserservice.constants.DatabaseConstants;
 import com.example.toyuserservice.constants.MessageKeys;
 import com.example.toyuserservice.constants.ModelMapperConstants;
+import com.example.toyuserservice.domain.common.ErrorCode;
 import com.example.toyuserservice.domain.dao.UserDao;
 import com.example.toyuserservice.domain.dto.UserDto;
+import com.example.toyuserservice.exception.CustomException;
 import com.example.toyuserservice.repository.UserRepository;
 import com.example.toyuserservice.repository.impl.UserRepositoryImpl;
 import com.example.toyuserservice.repository.template.CollectionIdGenerateRepository;
@@ -41,10 +43,10 @@ public class CommonUserServiceImpl implements UserService {
 
     private void emailAndNickNameDuplicationCheck(String email, String nickname) {
         if(userRepository.existsByEmail(email))
-            throw new RuntimeException(messageSource.getMessage(MessageKeys.PARAMS_DUPLICATE_EMAIL, null, LocaleContextHolder.getLocale()));
+            throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
 
         if(userRepository.existsByNickName(nickname))
-            throw new RuntimeException(messageSource.getMessage(MessageKeys.PARAMS_DUPLICATE_NICKNAME, null, LocaleContextHolder.getLocale()));
+            throw new CustomException(ErrorCode.DUPLICATED_NICKNAME);
     }
 
     // 유저 정보 찾기
