@@ -32,7 +32,6 @@ public class UserController {
 
     @PostMapping("")
     public ResponseEntity<UserResponse> createUser(@Valid  @RequestBody UserRequest userRequest){
-        //
         log.info("email:{} / mobile:{} / nickName:{}", userRequest.getEmail(), userRequest.getMobile(), userRequest.getNickName());
         // User 저장
         UserDto.Common userDto = userService.createUser(userRequest.getEmail(), userRequest.getPassword(), userRequest.getNickName(), userRequest.getMobile());
