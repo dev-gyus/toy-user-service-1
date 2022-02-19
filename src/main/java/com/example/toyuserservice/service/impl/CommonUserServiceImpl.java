@@ -1,6 +1,9 @@
 package com.example.toyuserservice.service.impl;
 
 import com.example.toyuserservice.constants.DatabaseConstants;
+import com.example.toyuserservice.constants.DatabaseConstants.Field;
+import com.example.toyuserservice.constants.KafkaConstants;
+import com.example.toyuserservice.constants.KafkaConstants.Topic;
 import com.example.toyuserservice.constants.MessageKeys;
 import com.example.toyuserservice.constants.ModelMapperConstants;
 import com.example.toyuserservice.domain.common.ErrorCode;
@@ -14,10 +17,13 @@ import com.example.toyuserservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +33,7 @@ public class CommonUserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final MessageSource messageSource;
     private final UserRepositoryImpl userRepositoryImpl;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public UserDto.Common createUser(String email, String password, String nickName, String mobile) {
@@ -61,6 +68,14 @@ public class CommonUserServiceImpl implements UserService {
         // 시퀀셜 Id 유무 확인. 없으면 예외
         if(!userRepository.existsByUserId(userId))
             throw new RuntimeException(messageSource.getMessage(MessageKeys.USER_NOT_FOUND, null, LocaleContextHolder.getLocale()));
+        // kafka message 전송
+        Update update = new Update();
+        if(nickName != null) update.set(Field.NAME_NICK_NAME, nickName);
+        if(mobile != null) update.set(Field.NAME_MOBILE, mobile);
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put(KafkaConstants.Key.USER_ID, userId);
+        data.put(KafkaConstants.Key.UPDATE_OBJECT, update.getUpdateObject());
+        kafkaTemplate.send(Topic.UPDATE_USER, data);
         // user 정보 수정
         return userRepositoryImpl.updateUserDto(userId, nickName, mobile);
     }
