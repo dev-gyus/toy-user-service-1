@@ -26,7 +26,7 @@ public class DefaultMongoUpdateDeserializer extends StdDeserializer<KafkaTestDto
     }
 
     @Override
-    public KafkaTestDto.User deserialize(JsonParser parser, DeserializationContext deserializer) throws IOException, JacksonException {
+    public KafkaTestDto.User deserialize(JsonParser parser, DeserializationContext deserializer) throws IOException {
         ObjectCodec codec = parser.getCodec();
         JsonNode treeNode = codec.readTree(parser);
         KafkaTestDto.User kafkaTestDto = new KafkaTestDto.User();
