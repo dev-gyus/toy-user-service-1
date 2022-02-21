@@ -76,6 +76,7 @@ public class CommonUserServiceImpl implements UserService {
         data.put(KafkaConstants.Key.USER_ID, userId);
         data.put(KafkaConstants.Key.UPDATE_OBJECT, update.getUpdateObject());
         kafkaTemplate.send(Topic.UPDATE_USER, data);
+        kafkaTemplate.send(Topic.UPDATE_USER2, data);
         // user 정보 수정
         return userRepositoryImpl.updateUserDto(userId, nickName, mobile);
     }

@@ -14,22 +14,27 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.query.Update;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
-public class DefaultMongoUpdateDeserializer extends StdDeserializer<KafkaTestDto.User> {
-    public DefaultMongoUpdateDeserializer() {
-        this(null);
+public class DefaultMongoUpdateDeserializer extends StdDeserializer<KafkaTestDto> {
+    private KafkaTestDto dto;
+
+    public DefaultMongoUpdateDeserializer(Class<? extends KafkaTestDto> clazz){
+        super(clazz);
+        try {
+            this.dto = clazz.getDeclaredConstructor(null).newInstance(null);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
     }
 
-    protected DefaultMongoUpdateDeserializer(Class<?> vc) {
-        super(vc);
-    }
 
     @Override
-    public KafkaTestDto.User deserialize(JsonParser parser, DeserializationContext deserializer) throws IOException {
+    public KafkaTestDto deserialize(JsonParser parser, DeserializationContext deserializer) throws IOException {
         ObjectCodec codec = parser.getCodec();
         JsonNode treeNode = codec.readTree(parser);
-        KafkaTestDto.User kafkaTestDto = new KafkaTestDto.User();
         try {
             for(Field field : KafkaTestDto.User.class.getDeclaredFields()){
                 JsonNode fieldNode = treeNode.get(field.getName());
@@ -38,19 +43,19 @@ public class DefaultMongoUpdateDeserializer extends StdDeserializer<KafkaTestDto
                 if(!field.getName().equals(Key.UPDATE_OBJECT)) {
                     if(field.getName().contains("Id")) {
                         long idValue = fieldNode.asLong();
-                        field.set(kafkaTestDto, idValue);
+                        field.set(dto, idValue);
                     }else{
                         String stringValue = fieldNode.asText();
-                        field.set(kafkaTestDto, stringValue);
+                        field.set(dto, stringValue);
                     }
                 }
                 else{
-                    field.set(kafkaTestDto, Update.fromDocument(Document.parse(fieldNode.toString())));
+                    field.set(dto, Update.fromDocument(Document.parse(fieldNode.toString())));
                 }
             }
         } catch (IllegalAccessException e) {
             throw new CustomException(ErrorCode.GENERIC_INSTANTIATING_FAILED);
         }
-        return kafkaTestDto;
+        return dto;
     }
 }

@@ -1,9 +1,6 @@
 package com.example.toyuserservice.kafka_listener;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.Document;
 import org.springframework.data.annotation.AccessType;
 import org.springframework.data.mongodb.core.query.Update;
@@ -24,8 +21,19 @@ public class KafkaTestDto {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @EqualsAndHashCode(callSuper = true)
     @AccessType(AccessType.Type.PROPERTY)
-    public static class User {
+    public static class User extends KafkaTestDto {
+        private Long userId;
+        private Update update;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode(callSuper = true)
+    @AccessType(AccessType.Type.PROPERTY)
+    public static class User2 extends KafkaTestDto {
         private Long userId;
         private Update update;
     }
