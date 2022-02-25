@@ -28,7 +28,6 @@ import java.util.Map;
 @Configuration
 @EnableKafka
 public class KafkaConfig {
-//
     @Bean
     public ObjectMapper kafkaObjectMapper(){
         ObjectMapper objectMapper = JacksonUtils.enhancedObjectMapper();
