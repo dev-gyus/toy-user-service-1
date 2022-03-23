@@ -48,7 +48,7 @@ public class KafkaConfig {
     public ConsumerFactory<String, Object> consumerFactory(){
         return new DefaultKafkaConsumerFactory<>(consumerConfig());
     }
-//
+
     @Bean
     public Map<String, Object> consumerConfig(){
         HashMap<String, Object> configMap = new HashMap<>();
