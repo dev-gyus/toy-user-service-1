@@ -70,7 +70,7 @@ public class KafkaConfig {
     public ProducerFactory<String, Object> producerFactory(){
         return new DefaultKafkaProducerFactory<>(producerConfig());
     }
-
+//
     @Bean
     public Map<String, Object> producerConfig(){
         HashMap<String, Object> config = new HashMap<>();
