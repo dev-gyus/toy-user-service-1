@@ -35,7 +35,7 @@ public class MongoDbConfig extends AbstractMongoClientConfiguration {
     protected String getDatabaseName() {
         return database;
     }
-//
+
     @Override
     public MongoClient mongoClient() {
         return MongoClients.create(dbUri);
