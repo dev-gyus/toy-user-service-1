@@ -4,6 +4,7 @@ public class DatabaseConstants {
     public static class Collection{
         public static final String NAME_COLLECTION_ID_GENERATE = "collectionIdGenerate";
         public static final String NAME_USER = "user";
+        public static final String NAME_KAFKA_INFO = "kafkaInfo";
     }
 
     public static class Field {
