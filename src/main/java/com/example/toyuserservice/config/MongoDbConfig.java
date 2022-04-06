@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class MongoDbConfig extends AbstractMongoClientConfiguration {
-
+//
     @Value("${spring.data.mongodb.database}")
     private String database;
 
