@@ -51,7 +51,7 @@ public class TestController {
     public ResponseEntity<String> getUser(){
         return new ResponseEntity<>("'username': 'gyus', 'mobile':'10-1234-1234'", HttpStatus.OK);
     }
-
+//
     @GetMapping("/hello")
     public ResponseEntity<String> getHello(){
         log.info("user-client info: {}", env.getProperty("eureka.instance.instance-id"));
