@@ -10,21 +10,32 @@ import com.example.toyuserservice.domain.common.ErrorCode;
 import com.example.toyuserservice.domain.dao.UserDao;
 import com.example.toyuserservice.domain.dto.UserDto;
 import com.example.toyuserservice.exception.CustomException;
+import com.example.toyuserservice.kafka_listener.KafkaTestDto;
 import com.example.toyuserservice.repository.UserRepository;
 import com.example.toyuserservice.repository.impl.UserRepositoryImpl;
 import com.example.toyuserservice.repository.template.CollectionIdGenerateRepository;
 import com.example.toyuserservice.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.kafka.KafkaException;
+import org.springframework.kafka.core.KafkaFailureCallback;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommonUserServiceImpl implements UserService {
@@ -63,8 +74,9 @@ public class CommonUserServiceImpl implements UserService {
     }
 
     // 유저 정보 수정
+    @Retryable(value = KafkaException.class, maxAttempts = 1, backoff = @Backoff(value = 500L))
     @Override
-    public UserDto.Common updateUser(Long userId, String nickName, String mobile) {
+    public void updateUser(Long userId, String nickName, String mobile) throws KafkaException {
         // 시퀀셜 Id 유무 확인. 없으면 예외
         if(!userRepository.existsByUserId(userId))
             throw new RuntimeException(messageSource.getMessage(MessageKeys.USER_NOT_FOUND, null, LocaleContextHolder.getLocale()));
@@ -72,12 +84,18 @@ public class CommonUserServiceImpl implements UserService {
         Update update = new Update();
         if(nickName != null) update.set(Field.NAME_NICK_NAME, nickName);
         if(mobile != null) update.set(Field.NAME_MOBILE, mobile);
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put(KafkaConstants.Key.USER_ID, userId);
-        data.put(KafkaConstants.Key.UPDATE_OBJECT, update.getUpdateObject());
-        kafkaTemplate.send(Topic.UPDATE_USER, data);
-        kafkaTemplate.send(Topic.UPDATE_USER2, data);
+//        Map<String, Object> data = new LinkedHashMap<>();
+//        data.put(KafkaConstants.Key.USER_ID, userId);
+//        data.put(KafkaConstants.Key.UPDATE_OBJECT, update.getUpdateObject());
+        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send(Topic.UPDATE_USER, new KafkaTestDto(userId, update.getUpdateObject(), Arrays.asList(1L,2L,3L)));
+
+        future.addCallback(result -> {
+                    log.info("message send success");
+                },
+                (KafkaFailureCallback<String,Object>) failResult -> {
+                    throw failResult;
+                });
         // user 정보 수정
-        return userRepositoryImpl.updateUserDto(userId, nickName, mobile);
+//        return userRepositoryImpl.updateUserDto(userId, nickName, mobile);
     }
 }

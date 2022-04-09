@@ -14,6 +14,7 @@ public class KafkaConstants {
     public static class Key {
 
         public static final String UPDATE_OBJECT = "update";
+        public static final String DOCUMENT = "document";
         public static final String USER_ID = "userId";
     }
 }

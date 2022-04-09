@@ -102,7 +102,7 @@ public class TestController {
         config.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1); // 한 개의 프로듀서가 한 번에 보낼 수 있는 최대 메시지 개수 = 1개 <- retry시 메시지 순서 보장
         config.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);    // 브로커에 전송 요청을 보내고 응답을 기다리는 최대 시간
         config.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 95000); // send() 메소드를 실행한 뒤 성공,실패를 결정하는 최대 시간. retry * requestTimeOutMs + 여유분
-        config.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 30000);  // request 응답 대기 최종 대기 시간 (이 값으로 전송 실패했을때 기다렸다 예외뜨는 시간 제어 / 예외 = TimeoutException)
+        config.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 5000);  // request 응답 대기 최종 대기 시간 (이 값으로 전송 실패했을때 기다렸다 예외뜨는 시간 제어 / 예외 = TimeoutException)
 
         KafkaTemplate<String, Object> template = ctx.getBean(KafkaTemplate.class);
         template.getProducerFactory().updateConfigs(config);

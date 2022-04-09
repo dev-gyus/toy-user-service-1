@@ -56,8 +56,8 @@ public class UserController {
         if(!Pattern.matches(Constants.REGEX_MOBILE, userUpdateRequest.getMobile()))
             throw new InvalidParameterException(messageSource.getMessage(MessageKeys.PARAMS_INVALID_MOBILE, null, LocaleContextHolder.getLocale()));
         // 정보 수정
-        UserDto.Common dto = userService.updateUser(userId, userUpdateRequest.getNickName(), userUpdateRequest.getMobile());
-        return new ResponseEntity<>(UserResponse.builder().user(ModelMapperConstants.map(dto, User.class)).build(), HttpStatus.OK);
+        userService.updateUser(userId, userUpdateRequest.getNickName(), userUpdateRequest.getMobile());
+        return new ResponseEntity<>(UserResponse.builder().user(null).build(), HttpStatus.OK);
     }
 
 

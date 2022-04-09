@@ -1,6 +1,7 @@
 package com.example.toyuserservice.kafka_listener;
 
 import com.example.toyuserservice.constants.KafkaConstants.Topic;
+import com.example.toyuserservice.repository.impl.UserRepositoryImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class KafkaListenerController {
     private final ObjectMapper kafkaObjectMapper;
+    private final UserRepositoryImpl userRepository;
 
     @KafkaListener(topics = "testTopic", groupId = "client-service")
     public void testListen(String message) throws JsonProcessingException {
@@ -23,9 +25,11 @@ public class KafkaListenerController {
     }
 
     @KafkaListener(topics = Topic.UPDATE_USER, groupId = "client-service")
-        public void updateUser(String message) throws IOException {
-            log.info("data:{}", message);
-        KafkaTestDto.User dto = kafkaObjectMapper.readValue(message, KafkaTestDto.User.class);
+        public void updateUser(KafkaTestDto dto) throws IOException {
+            log.info("data:{}", dto);
+//        KafkaTestDto.User dto = kafkaObjectMapper.readValue(message, KafkaTestDto.User.class);
+        if(dto.getUpdate().getUpdateObject().isEmpty()) return;
+        userRepository.updateUserDto(dto.getId(), dto.getUpdate());
     }
 
     @KafkaListener(topics = Topic.UPDATE_USER2, groupId = "client-service")

@@ -38,27 +38,29 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(){
-        ConcurrentKafkaListenerContainerFactory<String, Object> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaTestDto> kafkaListenerContainerFactory(){
+        ConcurrentKafkaListenerContainerFactory<String, KafkaTestDto> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
         containerFactory.setConsumerFactory(consumerFactory());
         return containerFactory;
     }
 
     @Bean
-    public ConsumerFactory<String, Object> consumerFactory(){
-        return new DefaultKafkaConsumerFactory<>(consumerConfig());
-    }
-
-    @Bean
-    public Map<String, Object> consumerConfig(){
+    public ConsumerFactory<String, KafkaTestDto> consumerFactory(){
+        JsonDeserializer<KafkaTestDto> jsonDeserializer = new JsonDeserializer<>(kafkaObjectMapper());
         HashMap<String, Object> configMap = new HashMap<>();
         configMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         configMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        configMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        configMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, jsonDeserializer);
         configMap.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP.USER_SERVICE);
         configMap.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        return configMap;
+        return new DefaultKafkaConsumerFactory<>(configMap, new StringDeserializer(), jsonDeserializer);
     }
+
+//    @Bean
+//    public Map<String, Object> consumerConfig(){
+//
+//        return configMap;
+//    }
 
     // Producer(Publisher) 설정
     @Bean
