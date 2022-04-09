@@ -70,12 +70,8 @@ public class TestController {
         return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
     }
 
-    @GetMapping("/refresh")
-    public ResponseEntity<Boolean> kafkaRefresh(Long originIpId, String modifyIps) {
-        log.info("카프카 리프레쉬");
-        KafkaInfoDao dao = kafkaInfoRepository.findByKafkaInfoId(originIpId);
-        log.info("KafkaInfo : {}", dao.getInfo());
-
+    @GetMapping("/refresh/consumer")
+    public ResponseEntity<Boolean> kafkaRefresh(String modifyIps) {
         ConcurrentKafkaListenerContainerFactory<String, Object> bean = ctx.getBean(ConcurrentKafkaListenerContainerFactory.class);
         String originIp = (String) bean.getConsumerFactory().getConfigurationProperties().get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG);
         log.info("originIp : {}", originIp);
@@ -89,19 +85,28 @@ public class TestController {
 
         bean.getConsumerFactory().updateConfigs(configMap);
 
-        HashMap<String, Object> config = new HashMap<>();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, modifyIps);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-
-        KafkaTemplate<String, Object> template = ctx.getBean(KafkaTemplate.class);
-        template.getProducerFactory().updateConfigs(config);
-        template.getProducerFactory().reset();
-
         registry.stop();
         registry.setApplicationContext(ctx);
         registry.start();
 
+        return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
+    }
+
+    @GetMapping("/refresh/producer")
+    public ResponseEntity<Boolean> producerRefresh(String modifyIps) {
+        HashMap<String, Object> config = new HashMap<>();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, modifyIps);
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        config.put(ProducerConfig.RETRIES_CONFIG, 3); // 브로커가 연결되어있는 상태이지만 알 수 없는 모종의 이유로 메세지를 보내지 못 하는경우 리트라이
+        config.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1); // 한 개의 프로듀서가 한 번에 보낼 수 있는 최대 메시지 개수 = 1개 <- retry시 메시지 순서 보장
+        config.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);    // 브로커에 전송 요청을 보내고 응답을 기다리는 최대 시간
+        config.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 95000); // send() 메소드를 실행한 뒤 성공,실패를 결정하는 최대 시간. retry * requestTimeOutMs + 여유분
+        config.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 30000);  // request 응답 대기 최종 대기 시간 (이 값으로 전송 실패했을때 기다렸다 예외뜨는 시간 제어 / 예외 = TimeoutException)
+
+        KafkaTemplate<String, Object> template = ctx.getBean(KafkaTemplate.class);
+        template.getProducerFactory().updateConfigs(config);
+        template.getProducerFactory().reset();
 
         return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
     }
@@ -109,7 +114,7 @@ public class TestController {
     @GetMapping("/post/refresh")
     public ResponseEntity<Boolean> kafkaPostRefresh() {
         log.info("카프카 리프레쉬");
-
+//
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(KafkaConfig.class);
         ConcurrentKafkaListenerContainerFactory<String, Object> bean = ctx.getBean(ConcurrentKafkaListenerContainerFactory.class);
         String originIp = (String) bean.getConsumerFactory().getConfigurationProperties().get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG);

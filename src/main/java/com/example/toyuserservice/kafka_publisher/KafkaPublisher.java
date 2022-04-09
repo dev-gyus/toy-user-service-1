@@ -1,5 +1,6 @@
 package com.example.toyuserservice.kafka_publisher;
 
+import com.example.toyuserservice.constants.KafkaConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.util.concurrent.ListenableFuture;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.toyuserservice.constants.KafkaConstants.Topic.*;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -27,7 +30,7 @@ public class KafkaPublisher {
         map.put("update", Update.update("update", updateTestValue).getUpdateObject());
         map.put("id", 1L);
         // send message
-        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send("testTopic", map);
+        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send(UPDATE_USER, map);
         // async callback
         future.addCallback(result -> {
             log.info("message send success.");

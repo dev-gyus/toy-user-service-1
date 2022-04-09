@@ -77,6 +77,10 @@ public class KafkaConfig {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        config.put(ProducerConfig.RETRIES_CONFIG, 3);
+        config.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1); // 한 개의 프로듀서가 한 번에 보낼 수 있는 최대 메시지 개수 = 1개 <- retry시 메시지 순서 보장
+        config.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);
+        config.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 95000); // send() 메소드를 실행한 뒤 성공,실패를 결정하는 최대 시간. retry * requestTimeOutMs + 여유분
         return config;
     }
 
