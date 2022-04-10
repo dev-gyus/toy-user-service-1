@@ -25,17 +25,19 @@ public class KafkaListenerController {
     }
 
     @KafkaListener(topics = Topic.UPDATE_USER, groupId = "client-service")
-        public void updateUser(KafkaTestDto dto) throws IOException {
+        public void updateUser(KafkaTestDto.User dto) throws IOException {
             log.info("data:{}", dto);
 //        KafkaTestDto.User dto = kafkaObjectMapper.readValue(message, KafkaTestDto.User.class);
+//        KafkaTestDto.User userDto = (KafkaTestDto.User) dto;
         if(dto.getUpdate().getUpdateObject().isEmpty()) return;
-        userRepository.updateUserDto(dto.getId(), dto.getUpdate());
+        userRepository.updateUserDto(dto.getUserId(), dto.getUpdate());
     }
 
     @KafkaListener(topics = Topic.UPDATE_USER2, groupId = "client-service")
-    public void updateUser2(String message) throws IOException {
-        log.info("data:{}", message);
-        KafkaTestDto.User2 dto = kafkaObjectMapper.readValue(message, KafkaTestDto.User2.class);
+    public void updateUser2(KafkaTestDto.User2 dto) throws IOException {
+        log.info("data:{}", dto);
+//        KafkaTestDto.User2 dto = kafkaObjectMapper.readValue(message, KafkaTestDto.User2.class);
+        log.info(dto.toString());
     }
 
 }

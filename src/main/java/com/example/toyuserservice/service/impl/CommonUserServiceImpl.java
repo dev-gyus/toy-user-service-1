@@ -87,9 +87,18 @@ public class CommonUserServiceImpl implements UserService {
 //        Map<String, Object> data = new LinkedHashMap<>();
 //        data.put(KafkaConstants.Key.USER_ID, userId);
 //        data.put(KafkaConstants.Key.UPDATE_OBJECT, update.getUpdateObject());
-        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send(Topic.UPDATE_USER, new KafkaTestDto(userId, update.getUpdateObject(), Arrays.asList(1L,2L,3L)));
-
+        KafkaTestDto.User dto1 = new KafkaTestDto.User(userId, update.getUpdateObject(), KafkaTestDto.User.class.getName());
+        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send(Topic.UPDATE_USER, dto1);
         future.addCallback(result -> {
+                    log.info("message send success");
+                },
+                (KafkaFailureCallback<String,Object>) failResult -> {
+                    throw failResult;
+                });
+
+        KafkaTestDto.User2 dto2 = new KafkaTestDto.User2(userId, update.getUpdateObject(), KafkaTestDto.User2.class.getName());
+        ListenableFuture<SendResult<String, Object>> future2 = kafkaTemplate.send(Topic.UPDATE_USER2, dto2);
+        future2.addCallback(result -> {
                     log.info("message send success");
                 },
                 (KafkaFailureCallback<String,Object>) failResult -> {

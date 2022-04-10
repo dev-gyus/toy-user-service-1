@@ -32,7 +32,7 @@ public class KafkaConfig {
     public ObjectMapper kafkaObjectMapper(){
         ObjectMapper objectMapper = JacksonUtils.enhancedObjectMapper();
         SimpleModule module = new SimpleModule("DefaultMongoUpdateDeserializer", new Version(1, 0, 0, null, null, null));
-        module.addDeserializer(KafkaTestDto.class, new DefaultMongoUpdateDeserializer(KafkaTestDto.class));
+        module.addDeserializer(KafkaTestDto.class, new DefaultMongoUpdateDeserializer<>(KafkaTestDto.class));
         objectMapper.registerModule(module);
         return objectMapper;
     }
@@ -53,6 +53,11 @@ public class KafkaConfig {
         configMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, jsonDeserializer);
         configMap.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP.USER_SERVICE);
         configMap.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        configMap.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
+        configMap.put(JsonDeserializer.KEY_DEFAULT_TYPE, KafkaTestDto.class);
+        configMap.put(JsonDeserializer.VALUE_DEFAULT_TYPE, KafkaTestDto.class);
+
+
         return new DefaultKafkaConsumerFactory<>(configMap, new StringDeserializer(), jsonDeserializer);
     }
 

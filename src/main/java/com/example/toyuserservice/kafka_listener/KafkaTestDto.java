@@ -8,38 +8,36 @@ import org.springframework.data.mongodb.core.query.Update;
 import java.util.List;
 
 
-@Data
-@NoArgsConstructor
-@AccessType(AccessType.Type.PROPERTY)
 public class KafkaTestDto {
-    private Long id;
-    private Update update;
-    private Document document;
-    private List<Long> idList;
 
-    public KafkaTestDto(Long id, Document document, List<Long> idList) {
-        this.id = id;
-        this.document = document;
-        this.idList = idList;
+    @Data
+    @NoArgsConstructor
+    @AccessType(AccessType.Type.PROPERTY)
+    public static class User {
+        private Long userId;
+        private Document document;
+        private Update update;
+        private String child;
+
+        public User(Long userId, Document document, String child) {
+            this.userId = userId;
+            this.document = document;
+            this.child = child;
+        }
     }
 
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
     @AccessType(AccessType.Type.PROPERTY)
-    public static class User extends KafkaTestDto {
+    public static class User2{
         private Long userId;
+        private Document document;
         private Update update;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    @AccessType(AccessType.Type.PROPERTY)
-    public static class User2 extends KafkaTestDto {
-        private Long userId;
-        private Update update;
+        private String child;
+        public User2(Long userId, Document document, String child) {
+            this.userId = userId;
+            this.document = document;
+            this.child = child;
+        }
     }
 }
