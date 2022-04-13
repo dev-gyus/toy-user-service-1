@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class KafkaAop {
 
     private final UserRepositoryImpl userRepository;
-
+//
     @Around("execution(* com.example.toyuserservice.service.UserService..*(..))")
     public void execute(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
