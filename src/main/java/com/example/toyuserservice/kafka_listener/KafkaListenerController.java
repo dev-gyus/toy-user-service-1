@@ -29,7 +29,7 @@ public class KafkaListenerController {
             log.info("data:{}", dto);
 //        KafkaTestDto.User dto = kafkaObjectMapper.readValue(message, KafkaTestDto.User.class);
 //        KafkaTestDto.User userDto = (KafkaTestDto.User) dto;
-        if(dto.getUpdate().getUpdateObject().isEmpty()) return;
+        if(dto.getUpdate() == null || dto.getUpdate().getUpdateObject().isEmpty()) return;
         userRepository.updateUserDto(dto.getUserId(), dto.getUpdate());
     }
 
@@ -38,6 +38,8 @@ public class KafkaListenerController {
         log.info("data:{}", dto);
 //        KafkaTestDto.User2 dto = kafkaObjectMapper.readValue(message, KafkaTestDto.User2.class);
         log.info(dto.toString());
+        if(dto.getUpdate() == null || dto.getUpdate().getUpdateObject().isEmpty()) return;
+        userRepository.updateUserDto(dto.getUserId(), dto.getUpdate());
     }
 
 }

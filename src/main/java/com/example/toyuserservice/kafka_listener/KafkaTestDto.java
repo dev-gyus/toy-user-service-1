@@ -1,11 +1,10 @@
 package com.example.toyuserservice.kafka_listener;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import org.bson.Document;
 import org.springframework.data.annotation.AccessType;
 import org.springframework.data.mongodb.core.query.Update;
-
-import java.util.List;
 
 
 public class KafkaTestDto {
@@ -31,6 +30,7 @@ public class KafkaTestDto {
     @AccessType(AccessType.Type.PROPERTY)
     public static class User2{
         private Long userId;
+        @JsonDeserialize(using = BsonDocumentDeserializer.class)
         private Document document;
         private Update update;
         private String child;
@@ -38,6 +38,10 @@ public class KafkaTestDto {
             this.userId = userId;
             this.document = document;
             this.child = child;
+        }
+
+        public Update getUpdate() {
+            return document != null ? Update.fromDocument(this.document) : new Update();
         }
     }
 }
