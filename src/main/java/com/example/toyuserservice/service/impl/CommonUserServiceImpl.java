@@ -66,7 +66,7 @@ public class CommonUserServiceImpl implements UserService {
         if(userRepository.existsByNickName(nickname))
             throw new CustomException(ErrorCode.DUPLICATED_NICKNAME);
     }
-
+//
     // 유저 정보 찾기
     @Override
     public UserDto.Common findUser(Long userId) {
