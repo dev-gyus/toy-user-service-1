@@ -72,7 +72,7 @@ public class CommonUserServiceImpl implements UserService {
     public UserDto.Common findUser(Long userId) {
         return userRepository.findByUserId(userId);
     }
-
+//
     // 유저 정보 수정
     @Retryable(value = KafkaException.class, maxAttempts = 1, backoff = @Backoff(value = 500L))
     @Override
